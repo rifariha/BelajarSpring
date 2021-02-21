@@ -2,11 +2,13 @@ package com.example.springmongo.springmongo.controller;
 
 import com.example.springmongo.springmongo.model.Tutorial;
 import com.example.springmongo.springmongo.repository.TutorialRepository;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.springmongo.springmongo.helper.CustomResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,7 @@ public class TutorialController {
 
     @Autowired
     TutorialRepository tutorialRepository;
+    CustomResponse Cusres;
 
     @PostMapping("/tutorials")
     public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
@@ -50,7 +53,7 @@ public class TutorialController {
             if (tutorials.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-
+            System.out.println("Ada disiini");
             return new ResponseEntity<>(tutorials, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,24 +65,34 @@ public class TutorialController {
         Optional<Tutorial> tutorialData = tutorialRepository.findById(id);
 
         if (tutorialData.isPresent()) {
-            return new ResponseEntity<>(tutorialData.get(), HttpStatus.OK);
+            return new ResponseEntity<>(tutorialData.get(), HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/tutorials/published")
-    public ResponseEntity<List<Tutorial>> findByPublished() {
-        try {
-            List<Tutorial> tutorials = tutorialRepository.findByPublished(true);
+    public ResponseEntity<List<Tutorial>> findByPublished() throws JSONException {
+        List<Tutorial> tutorials = null;
+//        try {
+            tutorials = new ArrayList<Tutorial>();
+            tutorials = tutorialRepository.findByPublished(true);
 
-            if (tutorials.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(tutorials, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+//            if (tutorials.isEmpty()) {
+//                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//            }
+
+        CustomResponse resp = new CustomResponse();
+        System.out.println("isi dari tutorial adalah "+tutorials);
+        resp.setData(tutorials);
+        ArrayList newData = resp.hasilData(tutorials);
+        System.out.println("data barunya "+newData);
+//            System.out.println(resp.dapatinIsinya());
+            return new ResponseEntity<>(newData , HttpStatus.OK);
+//        } catch (Exception e) {
+//            System.out.println(e);
+//            return new ResponseEntity<>(tutorials, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
     }
 
     @PutMapping("/tutorials/{id}")
