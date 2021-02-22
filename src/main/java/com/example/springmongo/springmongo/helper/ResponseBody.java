@@ -1,6 +1,6 @@
 package com.example.springmongo.springmongo.helper;
 
-public class CustomResponse {
+public class ResponseBody {
 
     private Integer code;
     private String message;

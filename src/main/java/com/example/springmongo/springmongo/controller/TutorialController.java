@@ -3,12 +3,11 @@ package com.example.springmongo.springmongo.controller;
 import com.example.springmongo.springmongo.model.Tutorial;
 import com.example.springmongo.springmongo.repository.TutorialRepository;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.springmongo.springmongo.helper.CustomResponse;
+import com.example.springmongo.springmongo.helper.ResponseBody;
 
 import java.util.*;
 
@@ -19,20 +18,28 @@ public class TutorialController {
 
     @Autowired
     TutorialRepository tutorialRepository;
-    CustomResponse Cusres;
+
+    protected ResponseBody response = new ResponseBody();
 
     @PostMapping("/tutorials")
-    public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
+    public ResponseEntity<ResponseBody> createTutorial(@RequestBody Tutorial tutorial) {
         try {
             Tutorial _tutorial = tutorialRepository.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false, tutorial.getPhone()));
-            return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
+            response.setCode(200);
+            response.setMessage("Data Insert Successfull");
+            response.setData(_tutorial);
+            return new ResponseEntity(response, HttpStatus.CREATED); //style1
+//            return new ResponseEntity<>(_tutorial, HttpStatus.CREATED); //style2
+//            return ResponseEntity.accepted().body(response); //style3
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setCode(403);
+            response.setMessage("Insert Failed");
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping ("/tutorials")
-    public ResponseEntity<List<Tutorial>> getAllTutorials(@RequestParam(required = false) String title, String description) {
+    public ResponseEntity<ResponseBody> getAllTutorials(@RequestParam(required = false) String title, String description) {
         try {
             List<Tutorial> tutorials = new ArrayList<Tutorial>();
 
@@ -46,51 +53,72 @@ public class TutorialController {
             else
             {
                 tutorialRepository.findAll().forEach(tutorials::add);
-                System.out.println("Isi tutorial : "+tutorials.toString());
             }
 
             if (tutorials.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                response.setCode(204);
+                response.setMessage("Data is Empty");
+                return new ResponseEntity(response, HttpStatus.OK);
+//                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            System.out.println("Ada disiini");
-            return new ResponseEntity<>(tutorials, HttpStatus.OK);
+
+            response.setCode(200);
+            response.setMessage("Data Successfully Retrieved");
+            response.setData(tutorials);
+
+            return new ResponseEntity(response, HttpStatus.OK);
+//            return ResponseEntity.accepted().body(response);
+//            return new ResponseEntity<>(tutorials, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setCode(500);
+            response.setMessage("Internal Server Error");
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/tutorials/{id}")
-    public ResponseEntity<Tutorial> getTutorialById(@PathVariable("id") String id) {
+    public ResponseEntity<ResponseBody> getTutorialById(@PathVariable("id") String id) {
         Optional<Tutorial> tutorialData = tutorialRepository.findById(id);
 
         if (tutorialData.isPresent()) {
-            return new ResponseEntity<>(tutorialData.get(), HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setCode(200);
+            response.setMessage("Data Successfully Retrieved");
+            response.setData(tutorialData);
+
+            return ResponseEntity.accepted().body(response);
+//            return new ResponseEntity<>(tutorialData.get(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            response.setCode(404);
+            response.setMessage("Data Not Found");
+            return new ResponseEntity(response, HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/tutorials/published")
-    public ResponseEntity<Object> findByPublished() throws JSONException {
+    public ResponseEntity<ResponseBody> findByPublished() {
         List<Tutorial> tutorials = null;
         try {
-            tutorials = new ArrayList<Tutorial>();
+//            tutorials = new ArrayList<Tutorial>();
             tutorials = tutorialRepository.findByPublished(true);
+            System.out.println(tutorials);
 
-            CustomResponse response = new CustomResponse();
             response.setCode(200);
-            response.setMessage("Success");
+            response.setMessage("Data Successfully Retrieved");
             response.setData(tutorials);
 
-            return ResponseEntity.accepted().body(response);
+            return new ResponseEntity(response,HttpStatus.OK);
+//            return ResponseEntity.accepted().body(response);
         } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<>(tutorials, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setCode(500);
+            response.setMessage(String.valueOf(e));
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//            return ResponseEntity.accepted().body(response);
         }
     }
 
     @PutMapping("/tutorials/{id}")
-    public ResponseEntity<Tutorial> updateTutorial(@PathVariable("id") String id, @RequestBody Tutorial tutorial) {
+    public ResponseEntity<Object> updateTutorial(@PathVariable("id") String id, @RequestBody Tutorial tutorial) {
         Optional<Tutorial> tutorialData = tutorialRepository.findById(id);
         if (tutorialData.isPresent()) {
             Tutorial _tutorial = tutorialData.get();
@@ -99,17 +127,36 @@ public class TutorialController {
             _tutorial.setPublished(tutorial.isPublished());
             return new ResponseEntity<>(tutorialRepository.save(_tutorial), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            response.setCode(404);
+            response.setMessage("Data Not found");
+            return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+//            return ResponseEntity.accepted().body(response);
         }
     }
 
     @DeleteMapping("/tutorials/{id}")
     public ResponseEntity<HttpStatus> deleteTutorial(@PathVariable("id") String id) {
         try {
-            tutorialRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            Optional<Tutorial> checkData = tutorialRepository.findById(id);
+            if(checkData.isPresent())
+            {
+                tutorialRepository.deleteById(id);
+                response.setCode(200);
+                response.setMessage("Delete Successfull");
+                return new ResponseEntity(response, HttpStatus.OK);
+            }
+            else
+            {
+               response.setCode(404);
+               response.setMessage("Data not found");
+               response.setData(null);
+               return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setCode(500);
+            response.setMessage(String.valueOf(e));
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -117,9 +164,15 @@ public class TutorialController {
     public ResponseEntity<HttpStatus> deleteAllTutorials() {
         try {
             tutorialRepository.deleteAll();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            response.setCode(200);
+            response.setMessage("All Data has been deleted");
+            return new ResponseEntity(response,HttpStatus.OK);
+//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setCode(500);
+            response.setMessage(String.valueOf(e));
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
