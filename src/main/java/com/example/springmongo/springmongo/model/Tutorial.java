@@ -58,8 +58,8 @@ public class Tutorial {
     }
 
 
-    @Override
-    public String toString() {
-        return "Tutorial id nya =" + id + ", title nya ini =" + title + ", deskripsinya ini=" + description + ", published=" + published + " phone nya=" + phone +"]";
-    }
+//    @Override
+//    public String toString() {
+//        return "Tutorial id nya =" + id + ", title nya ini =" + title + ", deskripsinya ini=" + description + ", published=" + published + " phone nya=" + phone +"]";
+//    }
 }

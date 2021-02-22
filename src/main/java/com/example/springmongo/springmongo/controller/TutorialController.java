@@ -9,9 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.springmongo.springmongo.helper.CustomResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
@@ -72,27 +71,22 @@ public class TutorialController {
     }
 
     @GetMapping("/tutorials/published")
-    public ResponseEntity<List<Tutorial>> findByPublished() throws JSONException {
+    public ResponseEntity<Object> findByPublished() throws JSONException {
         List<Tutorial> tutorials = null;
-//        try {
+        try {
             tutorials = new ArrayList<Tutorial>();
             tutorials = tutorialRepository.findByPublished(true);
 
-//            if (tutorials.isEmpty()) {
-//                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//            }
+            CustomResponse response = new CustomResponse();
+            response.setCode(200);
+            response.setMessage("Success");
+            response.setData(tutorials);
 
-        CustomResponse resp = new CustomResponse();
-        System.out.println("isi dari tutorial adalah "+tutorials);
-        resp.setData(tutorials);
-        ArrayList newData = resp.hasilData(tutorials);
-        System.out.println("data barunya "+newData);
-//            System.out.println(resp.dapatinIsinya());
-            return new ResponseEntity<>(newData , HttpStatus.OK);
-//        } catch (Exception e) {
-//            System.out.println(e);
-//            return new ResponseEntity<>(tutorials, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
+            return ResponseEntity.accepted().body(response);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(tutorials, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/tutorials/{id}")
