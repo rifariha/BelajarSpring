@@ -62,15 +62,17 @@ public class TutorialController {
 //                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            response.setCode(200);
-            response.setMessage("Data Successfully Retrieved");
-            response.setData(tutorials);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+                response.setCode(200);
+                response.setMessage("Data Successfully Retrieved");
+                response.setData(tutorials);
+              return new ResponseEntity<>(response, HttpStatus.OK);
+
+//            return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(tutorials);
 //            return ResponseEntity.accepted().body(response);
 //            return new ResponseEntity<>(tutorials, HttpStatus.OK);
         } catch (Exception e) {
             response.setCode(500);
-            response.setMessage("Internal Server Error");
+            response.setMessage(e.getMessage());
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 //            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -112,7 +114,7 @@ public class TutorialController {
 //            return ResponseEntity.accepted().body(response);
         } catch (Exception e) {
             response.setCode(500);
-            response.setMessage(String.valueOf(e));
+            response.setMessage(e.getMessage());
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 //            return ResponseEntity.accepted().body(response);
@@ -157,7 +159,7 @@ public class TutorialController {
             }
         } catch (Exception e) {
             response.setCode(500);
-            response.setMessage(String.valueOf(e));
+            response.setMessage(e.getMessage());
             return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
 //            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -174,7 +176,7 @@ public class TutorialController {
 //            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             response.setCode(500);
-            response.setMessage(String.valueOf(e));
+            response.setMessage(e.getMessage());
             response.setData(null);
             return new ResponseEntity(response,HttpStatus.INTERNAL_SERVER_ERROR);
 //            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
