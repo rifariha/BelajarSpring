@@ -12,13 +12,13 @@ public class Pegawai  {
     @Id
     private String id;
 
-    @NotNull(message = "First name is mandatory")
-    @Column(name="first_name")
+    @NotEmpty(message = "First name is mandatory")
+//    @Column(name="first_name")
     @Field("first_name")
     private String firstName;
 
     @NotEmpty(message = "last name must not be empty")
-    @Column(name="first_name")
+//    @Column(name="first_name")
     @Field("last_name")
     private String lastName;
 

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PegawaiRepository extends MongoRepository<Pegawai, String> {
     List<Pegawai> findByFirstNameContaining(String firstName);
+    List<Pegawai> findAll();
 }
