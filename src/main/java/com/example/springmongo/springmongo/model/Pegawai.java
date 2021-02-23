@@ -27,9 +27,9 @@ public class Pegawai  {
     @Field("photo")
     private String photo;
 
-    public Pegawai(String first_name, String last_name, String nip, String photo) {
-        this.firstName = first_name;
-        this.lastName = last_name;
+    public Pegawai(String firstName, String lastName, String nip, String photo) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.nip = nip;
         this.photo = photo;
     }
