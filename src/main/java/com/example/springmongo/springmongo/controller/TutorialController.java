@@ -27,23 +27,23 @@ public class TutorialController {
 
     protected ResponseBody response = new ResponseBody();
 
-    @PostMapping("/tutorials")
-    public ResponseEntity<ResponseBody> createTutorial(@RequestBody Tutorial tutorial) {
-        try {
-            Tutorial _tutorial = tutorialRepository.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false, tutorial.getPhone()));
-            response.setCode(200);
-            response.setMessage("Data Insert Successfull");
-            response.setData(_tutorial);
-            return new ResponseEntity<>(response, HttpStatus.CREATED); //style1
-//            return new ResponseEntity<>(_tutorial, HttpStatus.CREATED); //style2
-//            return ResponseEntity.accepted().body(response); //style3
-        } catch (Exception e) {
-            response.setCode(403);
-            response.setMessage("Insert Failed");
-            response.setData(null);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @PostMapping("/tutorials")
+//    public ResponseEntity<ResponseBody> createTutorial(@RequestBody Tutorial tutorial) {
+//        try {
+//            Tutorial _tutorial = tutorialRepository.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false, tutorial.getPhone()));
+//            response.setCode(200);
+//            response.setMessage("Data Insert Successfull");
+//            response.setData(_tutorial);
+//            return new ResponseEntity<>(response, HttpStatus.CREATED); //style1
+////            return new ResponseEntity<>(_tutorial, HttpStatus.CREATED); //style2
+////            return ResponseEntity.accepted().body(response); //style3
+//        } catch (Exception e) {
+//            response.setCode(403);
+//            response.setMessage("Insert Failed");
+//            response.setData(null);
+//            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     @PostMapping("/upload-files")
     public ResponseEntity handleFileUpload(@RequestParam(required = true) MultipartFile document, String title,  RedirectAttributes redirectAttributes) {
@@ -76,6 +76,7 @@ public class TutorialController {
             if (tutorials.isEmpty()) {
                 response.setCode(204);
                 response.setMessage("Data is Empty");
+                response.setData(null);
                 return new ResponseEntity<>(response, HttpStatus.OK);
 //                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
