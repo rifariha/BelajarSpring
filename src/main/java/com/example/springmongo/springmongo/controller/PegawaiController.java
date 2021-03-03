@@ -3,14 +3,16 @@ package com.example.springmongo.springmongo.controller;
 import com.example.springmongo.springmongo.helper.ResponseBody;
 import com.example.springmongo.springmongo.helper.UserExcelExporter;
 import com.example.springmongo.springmongo.model.Pegawai;
+import com.example.springmongo.springmongo.model.Tutorial;
 import com.example.springmongo.springmongo.repository.PegawaiRepository;
+import com.example.springmongo.springmongo.repository.TutorialRepository;
 import com.example.springmongo.springmongo.storage.StorageService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,15 +24,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/pegawai/")
 public class PegawaiController {
-    private final StorageService storageService;
+    public final StorageService storageService;
+
+    public final PegawaiRepository pegawaiRepository;
+    public final TutorialRepository tutorialRepository;
+
+    public ResponseBody response = new ResponseBody();
 
     @Autowired
-    PegawaiRepository pegawaiRepository;
-
-    protected ResponseBody response = new ResponseBody();
-
-    public PegawaiController(StorageService storageService) {
+    public PegawaiController(StorageService storageService, PegawaiRepository pegawaiRepository, TutorialRepository tutorialRepository) {
         this.storageService = storageService;
+        this.pegawaiRepository = pegawaiRepository;
+        this.tutorialRepository = tutorialRepository;
     }
 
     @PostMapping("/post")
@@ -39,9 +44,16 @@ public class PegawaiController {
         try {
             String filename = storageService.store(photo);
             Pegawai pegawai = new Pegawai(first_name,last_name,nip,filename);
-            System.out.println("isi nama file nya"+filename);
 
             Pegawai dataPegawai = pegawaiRepository.save(pegawai);
+
+            ObjectId pegawaiId = new ObjectId(dataPegawai.getId());
+
+            Tutorial tutorial = new Tutorial("jalan merdeka", "jalan jalan merdeka",true,124515, pegawaiId);
+            System.out.println("isi tutorial : "+tutorial.toString());
+
+            Tutorial dataTutor = tutorialRepository.save(tutorial);
+
             response.setCode(200);
             response.setMessage("Data Insert Successfull");
             response.setData(dataPegawai);

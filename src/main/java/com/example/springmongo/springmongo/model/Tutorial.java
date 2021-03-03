@@ -1,8 +1,14 @@
 package com.example.springmongo.springmongo.model;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.persistence.Column;
 import java.util.ArrayList;
+import java.util.List;
+
+
 
 @Document(collection = "tutorials")
 public class Tutorial {
@@ -14,11 +20,26 @@ public class Tutorial {
     private boolean published;
     private Integer phone;
 
-    public Tutorial(String title, String description, boolean published, Integer phone) {
+
+    @Field("pegawai_id")
+    @Column(name = "pegawai_id")
+    private ObjectId pegawai_id;
+
+    public ObjectId getPegawaiId() {
+        return pegawai_id;
+    }
+
+    public void setPegawaiId(ObjectId pegawai_id) {
+        this.pegawai_id = pegawai_id;
+    }
+
+
+    public Tutorial(String title, String description, boolean published, Integer phone, ObjectId pegawai_id) {
         this.title = title;
         this.description = description;
         this.published = published;
         this.phone = phone;
+        this.pegawai_id = pegawai_id;
     }
 
     public String getId() {
@@ -58,8 +79,8 @@ public class Tutorial {
     }
 
 
-//    @Override
-//    public String toString() {
-//        return "Tutorial id nya =" + id + ", title nya ini =" + title + ", deskripsinya ini=" + description + ", published=" + published + " phone nya=" + phone +"]";
-//    }
+    @Override
+    public String toString() {
+        return "Tutorial id nya =" + id + ", title nya ini =" + title + ", deskripsinya ini=" + description + ", published=" + published + " phone nya=" + phone + " pegawai id nya=" + pegawai_id + "]";
+    }
 }

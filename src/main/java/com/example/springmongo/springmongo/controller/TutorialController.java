@@ -18,15 +18,17 @@ import java.util.*;
 @RequestMapping("/api")
 public class TutorialController {
 
-    private final StorageService storageService;
+    public final StorageService storageService;
+
+    public final TutorialRepository tutorialRepository;
 
     @Autowired
-    TutorialRepository tutorialRepository;
-    public TutorialController(StorageService storageService) {
+    public TutorialController(StorageService storageService, TutorialRepository tutorialRepository) {
         this.storageService = storageService;
+        this.tutorialRepository = tutorialRepository;
     }
 
-    protected ResponseBody response = new ResponseBody();
+    public ResponseBody response = new ResponseBody();
 
 //    @PostMapping("/tutorials")
 //    public ResponseEntity<ResponseBody> createTutorial(@RequestBody Tutorial tutorial) {
@@ -60,6 +62,7 @@ public class TutorialController {
     @GetMapping ("/tutorials")
     public ResponseEntity<ResponseBody> getAllTutorials(@RequestParam(required = false) String title, String description) {
         try {
+        System.out.println("dwade");
             List<Tutorial> tutorials = new ArrayList<Tutorial>();
 
             if (title != null) {
